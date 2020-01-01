@@ -12,4 +12,4 @@ build-ceph-diskless: build-ubuntu-diskless
 	docker build -t h-otter/ceph-diskless ceph
 
 build-ceph: build-ceph-diskless
-	docker run -it --rm -v $(PWD)/var:/dst ceph-docker /bin/bash /entry_point.sh
+	docker run -it --rm -v $(PWD)/var:/dst h-otter/ceph-diskless /bin/bash /entry_point.sh

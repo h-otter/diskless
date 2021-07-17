@@ -1,1 +1,0 @@
-LABEL=n0kube-nvme	/mnt/nvme	ext4	errors=remount-ro	0	1

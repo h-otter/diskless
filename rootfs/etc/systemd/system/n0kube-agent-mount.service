@@ -1,0 +1,16 @@
+[Unit]
+Description=Mount local disks for n0kube
+DefaultDependencies=no
+Requires=-.mount
+After=-.mount
+After=systemd-journald.service
+Before=local-fs.target
+
+[Service]
+Type=oneshot
+RemainAfterExit=yes
+ExecStart=/usr/local/bin/n0kube-agent mount
+StandardOutput=journal+console
+
+[Install]
+WantedBy=local-fs.target

@@ -11,6 +11,13 @@ RUN mkdir -p /rootfs && \
         http://ftp.jaist.ac.jp/pub/Linux/ubuntu/
 
 
+FROM golang:1.16 AS BUILD_GO
+
+WORKDIR /workspace
+COPY n0kube-agent /workspace
+RUN go build -o bin/n0kube-agent ./
+
+
 FROM scratch AS IMAGE
 COPY --from=DEBOOTSTRAP /rootfs /
 
@@ -59,9 +66,6 @@ RUN apt install -y \
         tcpdump \
         frr
 
-COPY rootfs/etc/fstab /etc/fstab
-RUN mkdir -p /mnt/nvme
-
 # files
 COPY rootfs/etc/modules-load.d/* /etc/modules-load.d
 COPY rootfs/etc/sysctl.d/* /etc/sysctl.d
@@ -87,6 +91,11 @@ RUN apt autoremove --purge -y && \
     rm -rf /var/lib/apt/lists/* && \
     rm -rf /var/tmp/* && \
     rm -rf /tmp/*
+
+COPY rootfs/etc/systemd/system/* /etc/systemd/system
+RUN systemctl enable n0kube-agent-mount.service
+
+COPY --from=BUILD_GO /workspace/bin/n0kube-agent /usr/local/bin/n0kube-agent
 
 CMD /bin/bash
 

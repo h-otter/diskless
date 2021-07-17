@@ -1,0 +1,6 @@
+deb http://ftp.jaist.ac.jp/pub/Linux/ubuntu/ focal main restricted universe
+deb-src http://ftp.jaist.ac.jp/pub/Linux/ubuntu/ focal main restricted universe
+deb http://ftp.jaist.ac.jp/pub/Linux/ubuntu/ focal-security main restricted universe
+deb-src http://ftp.jaist.ac.jp/pub/Linux/ubuntu/ focal-security main restricted universe
+deb http://ftp.jaist.ac.jp/pub/Linux/ubuntu/ focal-updates main restricted universe
+deb-src http://ftp.jaist.ac.jp/pub/Linux/ubuntu/ focal-updates main restricted universe

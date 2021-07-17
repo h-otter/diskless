@@ -23,35 +23,11 @@ RUN apt update && \
 RUN apt install -y \
         linux-generic \
         live-boot \
-        openssh-server
-
-
-# packages
-RUN apt install -y \
-        nano \
-        tcpdump \
+        openssh-server \
         apt-transport-https \
         ca-certificates \
         curl \
-        software-properties-common \
-        frr
-
-# files
-COPY rootfs/etc/modules-load.d/* /etc/modules-load.d
-COPY rootfs/etc/sysctl.d/* /etc/sysctl.d
-
-# user
-ARG USER_NAME=diskless
-ARG USER_PASSWORD=diskless
-RUN useradd -m -s /bin/bash -G sudo ${USER_NAME} && \
-    echo "${USER_NAME}:${USER_PASSWORD}" | chpasswd
-
-# locale and time
-RUN echo "Asia/Tokyo" >  /etc/timezone && \
-    ln -s -f /usr/share/zoneinfo/Japan /etc/localtime && \
-    locale-gen en_US.UTF-8 && \
-    update-locale LANG=en_US.UTF-8
-COPY rootfs/etc/systemd/timesyncd.conf /etc/systemd/timesyncd.conf
+        software-properties-common
 
 # containerd
 RUN curl -fsSL https://download.docker.com/linux/ubuntu/gpg | apt-key add - && \
@@ -77,6 +53,33 @@ RUN apt-get update && \
     apt-mark hold kubelet kubeadm kubectl
 
 
+# packages
+RUN apt install -y \
+        nano \
+        tcpdump \
+        frr
+
+COPY rootfs/etc/fstab /etc/fstab
+RUN mkdir -p /mnt/nvme
+
+# files
+COPY rootfs/etc/modules-load.d/* /etc/modules-load.d
+COPY rootfs/etc/sysctl.d/* /etc/sysctl.d
+
+# user
+ARG USER_NAME=diskless
+ARG USER_PASSWORD=diskless
+RUN useradd -m -s /bin/bash -G sudo ${USER_NAME} && \
+    echo "${USER_NAME}:${USER_PASSWORD}" | chpasswd
+
+# locale and time
+RUN echo "Asia/Tokyo" >  /etc/timezone && \
+    ln -s -f /usr/share/zoneinfo/Japan /etc/localtime && \
+    locale-gen en_US.UTF-8 && \
+    update-locale LANG=en_US.UTF-8
+COPY rootfs/etc/systemd/timesyncd.conf /etc/systemd/timesyncd.conf
+
+
 # clean up
 RUN apt autoremove --purge -y && \
     apt autoclean -y && \
@@ -86,6 +89,7 @@ RUN apt autoremove --purge -y && \
     rm -rf /tmp/*
 
 CMD /bin/bash
+
 
 FROM ubuntu:focal AS BUILD_SQUASHFS
 
